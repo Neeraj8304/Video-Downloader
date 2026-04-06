@@ -1,0 +1,205 @@
+<!-- ===================== index.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRABR — Download Any Video</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div class="container">
+  <h1>GRABR</h1>
+
+  <input type="url" id="urlInput" placeholder="Paste video URL..." />
+
+  <div class="options">
+    <select id="quality">
+      <option value="max">Best</option>
+      <option value="1080">1080p</option>
+      <option value="720">720p</option>
+    </select>
+
+    <select id="format">
+      <option value="auto">Auto</option>
+      <option value="mp4">MP4</option>
+    </select>
+
+    <select id="audioMode">
+      <option value="auto">Video + Audio</option>
+      <option value="audio">Audio Only</option>
+    </select>
+  </div>
+
+  <button id="downloadBtn">Download</button>
+
+  <div id="result"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
+
+<!-- ===================== styles.css ===================== -->
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #0a0a0b;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 400px;
+  text-align: center;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  background: #f5a623;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+#result {
+  margin-top: 20px;
+}
+
+
+<!-- ===================== app.js ===================== -->
+const urlInput = document.getElementById('urlInput');
+const downloadBtn = document.getElementById('downloadBtn');
+const resultDiv = document.getElementById('result');
+
+// Event Listener
+downloadBtn.addEventListener('click', startDownload);
+
+async function startDownload() {
+  const url = urlInput.value.trim();
+
+  if (!isValidUrl(url)) {
+    showMessage('Invalid URL', 'error');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    if (!response.ok) throw new Error('Server error');
+
+    const data = await response.json();
+    handleResponse(data);
+
+  } catch (err) {
+    showMessage('Something went wrong', 'error');
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function handleResponse(data) {
+  if (!data || typeof data !== 'object') {
+    showMessage('Invalid response', 'error');
+    return;
+  }
+
+  if (data.error) {
+    showMessage(data.error, 'error');
+    return;
+  }
+
+  if (data.url) {
+    renderDownloadLink(data.url);
+  } else {
+    showMessage('No downloadable content found', 'error');
+  }
+}
+
+function renderDownloadLink(url) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.textContent = 'Download File';
+  link.target = '_blank';
+
+  resultDiv.innerHTML = '';
+  resultDiv.appendChild(link);
+}
+
+function showMessage(msg, type) {
+  resultDiv.textContent = msg;
+  resultDiv.style.color = type === 'error' ? 'red' : 'green';
+}
+
+function setLoading(state) {
+  downloadBtn.disabled = state;
+  downloadBtn.textContent = state ? 'Processing...' : 'Download';
+}
+
+function isValidUrl(str) {
+  try {
+    new URL(str);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+
+<!-- ===================== server.js (Node.js Backend) ===================== -->
+// Run with: node server.js
+
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+
+app.use(express.json());
+app.use(express.static(__dirname));
+
+app.post('/api/download', async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    const apiRes = await fetch('https://api.cobalt.tools/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ url })
+    });
+
+    const data = await apiRes.json();
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: 'Server failed' });
+  }
+});
+
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
