@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Followers Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojione/4.5.0/css/emojione.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            max-height: 700px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header::before {
+            content: "📷";
+            font-size: 1.8rem;
+        }
+
+        .access-control {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .access-control h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .access-control p {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .link-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .link-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .link-input input:focus {
+            border-color: #405de6;
+        }
+
+        .link-input button {
+            padding: 12px 20px;
+            background: #405de6;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .link-input button:hover {
+            background: #3349c9;
+        }
+
+        .link-info {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: #405de6;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: #666;
+        }
+
+        .message.received .message-time {
+            color: #666;
+        }
+
+        .message.sent .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .emoji-picker-container {
+            position: relative;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .message-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 5px 5px 5px 15px;
+            background: white;
+        }
+
+        .message-input-container:focus-within {
+            border-color: #405de6;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            resize: none;
+            max-height: 100px;
+            line-height: 1.4;
+        }
+
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .emoji-btn:hover {
+            color: #405de6;
+        }
+
+        .send-btn {
+            background: #405de6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #3349c9;
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            width: 300px;
+            max-width: 90vw;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 15px;
+            display: none;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .emoji-picker.active {
+            display: block;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-item {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .emoji-item:hover {
+            background: #f0f0f0;
+        }
+
+        .emoji-category {
+            margin-bottom: 10px;
+        }
+
+        .emoji-category-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+            padding: 0 5px;
+        }
+
+        .status {
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            margin: 10px 20px;
+            display: none;
+        }
+
+        .status.active {
+            display: block;
+        }
+
+        .user-list {
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #405de6, #e1306c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .user-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .user-status {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .online {
+            color: #28a745;
+        }
+
+        .offline {
+            color: #6c757d;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 8px 12px;
+            background: rgba(64, 93, 230, 0.1);
+            border-radius: 18px;
+            margin: 5px 20px;
+            font-size: 0.85rem;
+            color: #405de6;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #405de6;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .welcome-message h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message p {
+            margin-bottom: 20px;
+        }
+
+        .copy-link-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .copy-link-btn:hover {
+            background: #218838;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .emoji-picker {
+                width: 280px;
+                right: 10px;
+                bottom: 60px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Instagram Followers Chat
+        </div>
+        
+        <div class="access-control">
+            <h3>Private Access</h3>
+            <p>Only people with the link can join this chat room. Share it only with your Instagram followers.</p>
+            <div class="link-input">
+                <input type="text" id="roomLink" readonly value="">
+                <button onclick="copyRoomLink()">Copy Link</button>
+            </div>
+            <div class="link-info">
+                Room ID: <span id="roomId" style="font-weight: 600; color: #405de6;"></span>
+            </div>
+        </div>
+
+        <div class="user-list" id="userList">
+            <!-- Users will be added here -->
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span id="typingUser"></span> is typing
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome-message">
+                <h2>Welcome to Instagram Followers Chat</h2>
+                <p>Start chatting with your followers. Only people with the link can join.</p>
+                <p style="font-size: 0.85rem; color: #888;">Share the link above with your Instagram followers</p>
+            </div>
+        </div>
+
+        <div class="emoji-picker-container">
+            <div class="message-input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input" 
+                    placeholder="Type a message..." 
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                ></textarea>
+                <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                <button class="send-btn" onclick="sendMessage()" id="sendBtn">Send</button>
+            </div>
+            
+            <div class="emoji-picker" id="emojiPicker">
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Smileys & Emotion</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('😀')">😀</span>
+                        <span class="emoji-item" onclick="insertEmoji('😁')">😁</span>
+                        <span class="emoji-item" onclick="insertEmoji('😂')">😂</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤣')">🤣</span>
+                        <span class="emoji-item" onclick="insertEmoji('😃')">😃</span>
+                        <span class="emoji-item" onclick="insertEmoji('😄')">😄</span>
+                        <span class="emoji-item" onclick="insertEmoji('😅')">😅</span>
+                        <span class="emoji-item" onclick="insertEmoji('😆')">😆</span>
+                        <span class="emoji-item" onclick="insertEmoji('😊')">😊</span>
+                        <span class="emoji-item" onclick="insertEmoji('😇')">😇</span>
+                        <span class="emoji-item" onclick="insertEmoji('🙂')">🙂</span>
+                        <span class="emoji-item" onclick="insertEmoji('😉')">😉</span>
+                        <span class="emoji-item" onclick="insertEmoji('😌')">😌</span>
+                        <span class="emoji-item" onclick="insertEmoji('😍')">😍</span>
+                        <span class="emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+                        <span class="emoji-item" onclick="insertEmoji('💖')">💖</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">People & Body</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('👋')">👋</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤚')">🤚</span>
+                        <span class="emoji-item" onclick="insertEmoji('🖐️')">🖐️</span>
+                        <span class="emoji-item" onclick="insertEmoji('✋')">✋</span>
+                        <span class="emoji-item" onclick="insertEmoji('👌')">👌</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤞')">🤞</span>
+                        <span class="emoji-item" onclick="insertEmoji('✌️')">✌️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤟')">🤟</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤘')">🤘</span>
+                        <span class="emoji-item" onclick="insertEmoji('🤙')">🤙</span>
+                        <span class="emoji-item" onclick="insertEmoji('👈')">👈</span>
+                        <span class="emoji-item" onclick="insertEmoji('👉')">👉</span>
+                        <span class="emoji-item" onclick="insertEmoji('👆')">👆</span>
+                        <span class="emoji-item" onclick="insertEmoji('👇')">👇</span>
+                        <span class="emoji-item" onclick="insertEmoji('👍')">👍</span>
+                        <span class="emoji-item" onclick="insertEmoji('👎')">👎</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Animals & Nature</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('🐶')">🐶</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐱')">🐱</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐭')">🐭</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐹')">🐹</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐰')">🐰</span>
+                        <span class="emoji-item" onclick="insertEmoji('🦊')">🦊</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐻')">🐻</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐼')">🐼</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐨')">🐨</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐯')">🐯</span>
+                        <span class="emoji-item" onclick="insertEmoji('🦁')">🦁</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐮')">🐮</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐷')">🐷</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐸')">🐸</span>
+                        <span class="emoji-item" onclick="insertEmoji('🐵')">🐵</span>
+                        <span class="emoji-item" onclick="insertEmoji('🦒')">🦒</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Food & Drink</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('🍎')">🍎</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍏')">🍏</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍊')">🍊</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍋')">🍋</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍌')">🍌</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍉')">🍉</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍓')">🍓</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍇')">🍇</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍒')">🍒</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍑')">🍑</span>
+                        <span class="emoji-item" onclick="insertEmoji('🥭')">🥭</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍍')">🍍</span>
+                        <span class="emoji-item" onclick="insertEmoji('🥥')">🥥</span>
+                        <span class="emoji-item" onclick="insertEmoji('🥝')">🥝</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍕')">🍕</span>
+                        <span class="emoji-item" onclick="insertEmoji('🍔')">🍔</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Travel & Places</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('✈️')">✈️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚁')">🚁</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚂')">🚂</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚆')">🚆</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚇')">🚇</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚌')">🚌</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚍')">🚍</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚎')">🚎</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏎️')">🏎️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏍️')">🏍️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚲')">🚲</span>
+                        <span class="emoji-item" onclick="insertEmoji('🚴')">🚴</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏖️')">🏖️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏕️')">🏕️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏔️')">🏔️</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Activities</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('⚽')">⚽</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏀')">🏀</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏈')">🏈</span>
+                        <span class="emoji-item" onclick="insertEmoji('⚾')">⚾</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎾')">🎾</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏐')">🏐</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏉')">🏉</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎱')">🎱</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏓')">🏓</span>
+                        <span class="emoji-item" onclick="insertEmoji('🏸')">🏸</span>
+                        <span class="emoji-item" onclick="insertEmoji('🥊')">🥊</span>
+                        <span class="emoji-item" onclick="insertEmoji('🥋')">🥋</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎣')">🎣</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎯')">🎯</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎮')">🎮</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎲')">🎲</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Objects</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('📱')">📱</span>
+                        <span class="emoji-item" onclick="insertEmoji('💻')">💻</span>
+                        <span class="emoji-item" onclick="insertEmoji('⌨️')">⌨️</span>
+                        <span class="emoji-item" onclick="insertEmoji('📷')">📷</span>
+                        <span class="emoji-item" onclick="insertEmoji('📺')">📺</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎧')">🎧</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎵')">🎵</span>
+                        <span class="emoji-item" onclick="insertEmoji('🔋')">🔋</span>
+                        <span class="emoji-item" onclick="insertEmoji('💡')">💡</span>
+                        <span class="emoji-item" onclick="insertEmoji('🔦')">🔦</span>
+                        <span class="emoji-item" onclick="insertEmoji('🕯️')">🕯️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🌡️')">🌡️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🧪')">🧪</span>
+                        <span class="emoji-item" onclick="insertEmoji('🔬')">🔬</span>
+                        <span class="emoji-item" onclick="insertEmoji('📡')">📡</span>
+                        <span class="emoji-item" onclick="insertEmoji('💾')">💾</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Symbols</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+                        <span class="emoji-item" onclick="insertEmoji('🧡')">🧡</span>
+                        <span class="emoji-item" onclick="insertEmoji('💙')">💙</span>
+                        <span class="emoji-item" onclick="insertEmoji('💜')">💜</span>
+                        <span class="emoji-item" onclick="insertEmoji('💚')">💚</span>
+                        <span class="emoji-item" onclick="insertEmoji('💛')">💛</span>
+                        <span class="emoji-item" onclick="insertEmoji('💝')">💝</span>
+                        <span class="emoji-item" onclick="insertEmoji('💘')">💘</span>
+                        <span class="emoji-item" onclick="insertEmoji('💌')">💌</span>
+                        <span class="emoji-item" onclick="insertEmoji('💍')">💍</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎁')">🎁</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎊')">🎊</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎈')">🎈</span>
+                        <span class="emoji-item" onclick="insertEmoji('🎀')">🎀</span>
+                        <span class="emoji-item" onclick="insertEmoji('✨')">✨</span>
+                    </div>
+                </div>
+                <div class="emoji-category">
+                    <div class="emoji-category-title">Flags</div>
+                    <div class="emoji-grid">
+                        <span class="emoji-item" onclick="insertEmoji('🇺🇸')">🇺🇸</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇬🇧')">🇬🇧</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇨🇦')">🇨🇦</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇦🇺')">🇦🇺</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇩🇪')">🇩🇪</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇫🇷')">🇫🇷</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇯🇵')">🇯🇵</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇮🇳')">🇮🇳</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇧🇷')">🇧🇷</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇪🇸')">🇪🇸</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇮🇹')">🇮🇹</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇲🇽')">🇲🇽</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇳🇱')">🇳🇱</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇷🇺')">🇷🇺</span>
+                        <span class="emoji-item" onclick="insertEmoji('🇨🇳')">🇨🇳</span>
+                        <span class="emoji-item" onclick="insertEmoji('🌍')">🌍</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Configuration
+        const SOCKET_URL = 'wss://instagram-chat-socket.onrender.com';
+        // For local testing: 'ws://localhost:8080'
+        
+        // State
+        let socket;
+        let currentUser = {
+            id: generateUserId(),
+            name: 'User ' + Math.floor(Math.random() * 1000),
+            color: getRandomColor()
+        };
+        let roomId = generateRoomId();
+        let users = [];
+        let isTyping = false;
+        let lastTypingTime = 0;
+
+        // Initialize
+        function init() {
+            // Get room ID from URL if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlRoomId = urlParams.get('room');
+            if (urlRoomId) {
+                roomId = urlRoomId;
+            }
+            
+            // Update room display
+            document.getElementById('roomId').textContent = roomId;
+            document.getElementById('roomLink').value = window.location.origin + window.location.pathname + '?room=' + roomId;
+            
+            // Prompt for username
+            const userName = localStorage.getItem('igChatUserName');
+            if (userName) {
+                currentUser.name = userName;
+            } else {
+                const name = prompt('Enter your name:', 'User ' + Math.floor(Math.random() * 1000));
+                if (name && name.trim()) {
+                    currentUser.name = name.trim();
+                    localStorage.setItem('igChatUserName', currentUser.name);
+                }
+            }
+            
+            // Connect to WebSocket
+            connectWebSocket();
+            
+            // Auto-resize textarea
+            const textarea = document.getElementById('messageInput');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+                
+                // Send typing indicator
+                if (!isTyping) {
+                    isTyping = true;
+                    sendTyping(true);
+                }
+                lastTypingTime = Date.now();
+                
+                setTimeout(() => {
+                    if (Date.now() - lastTypingTime > 1000) {
+                        if (isTyping) {
+                            isTyping = false;
+                            sendTyping(false);
+                        }
+                    }
+                }, 1000);
+            });
+            
+            // Check for typing stop
+            setInterval(() => {
+                if (isTyping && Date.now() - lastTypingTime > 1000) {
+                    isTyping = false;
+                    sendTyping(false);
+                }
+            }, 1000);
+        }
+
+        function connectWebSocket() {
+            try {
+                socket = new WebSocket(SOCKET_URL);
+                
+                socket.onopen = function() {
+                    console.log('Connected to WebSocket server');
+                    // Join room
+                    socket.send(JSON.stringify({
+                        type: 'join',
+                        room: roomId,
+                        user: currentUser
+                    }));
+                    showToast('Connected to chat room');
+                };
+                
+                socket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                };
+                
+                socket.onclose = function() {
+                    console.log('Disconnected from WebSocket server');
+                    showToast('Disconnected. Reconnecting...');
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+                socket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                    showToast('Connection error. Retrying...');
+                };
+                
+            } catch (error) {
+                console.error('WebSocket connection failed:', error);
+                showToast('Could not connect. Using local mode.');
+                // Fallback to local storage for demo
+                setTimeout(connectWebSocket, 5000);
+            }
+        }
+
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'userList':
+                    updateUserList(data.users);
+                    break;
+                case 'message':
+                    addMessage(data.message);
+                    break;
+                case 'typing':
+                    handleTyping(data);
+                    break;
+                case 'system':
+                    showToast(data.message);
+                    break;
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message && socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: 'message',
+                    room: roomId,
+                    user: currentUser,
+                    text: message,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                // Add message locally immediately
+                addMessage({
+                    user: currentUser,
+                    text: message,
+                    timestamp: new Date().toISOString(),
+                    isCurrentUser: true
+                });
+                
+                input.value = '';
+                input.style.height = 'auto';
+                
+                // Stop typing
+                if (isTyping) {
+                    isTyping = false;
+                    sendTyping(false);
+                }
+            }
+        }
+
+        function sendTyping(isTyping) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: 'typing',
+                    room: roomId,
+                    user: currentUser,
+                    isTyping: isTyping
+                }));
+            }
+        }
+
+        function handleTyping(data) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            const typingUser = document.getElementById('typingUser');
+            
+            if (data.isTyping && data.user.id !== currentUser.id) {
+                typingUser.textContent = data.user.name;
+                typingIndicator.classList.add('active');
+            } else {
+                // Check if anyone else is typing
+                const stillTyping = users.some(u => u.id !== currentUser.id && u.isTyping);
+                if (!stillTyping) {
+                    typingIndicator.classList.remove('active');
+                }
+            }
+        }
+
+        function addMessage(message) {
+            const chatContainer = document.getElementById('chatContainer');
+            const welcomeMessage = chatContainer.querySelector('.welcome-message');
+            
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.user.id === currentUser.id ? 'sent' : 'received'}`;
+            
+            const messageInfo = document.createElement('div');
+            messageInfo.className = 'message-info';
+            
+            const senderSpan = document.createElement('span');
+            senderSpan.className = 'message-sender';
+            senderSpan.textContent = message.user.name;
+            senderSpan.style.color = message.user.color || currentUser.color;
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = formatTime(new Date(message.timestamp));
+            
+            messageInfo.appendChild(senderSpan);
+            messageInfo.appendChild(timeSpan);
+            
+            messageDiv.appendChild(messageInfo);
+            messageDiv.appendChild(document.createTextNode(message.text));
+            
+            chatContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 100);
+        }
+
+        function updateUserList(usersList) {
+            users = usersList;
+            const userListDiv = document.getElementById('userList');
+            userListDiv.innerHTML = '';
+            
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'user-avatar';
+                avatar.textContent = user.name.charAt(0).toUpperCase();
+                avatar.style.background = user.color || getRandomColor();
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'user-name';
+                nameSpan.textContent = user.name;
+                
+                const statusSpan = document.createElement('span');
+                statusSpan.className = `user-status ${user.online ? 'online' : 'offline'}`;
+                statusSpan.textContent = user.online ? 'Online' : 'Offline';
+                
+                userItem.appendChild(avatar);
+                userItem.appendChild(nameSpan);
+                userItem.appendChild(statusSpan);
+                
+                userListDiv.appendChild(userItem);
+            });
+        }
+
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.classList.toggle('active');
+        }
+
+        function insertEmoji(emoji) {
+            const input = document.getElementById('messageInput');
+            const cursorPos = input.selectionStart;
+            const textBefore = input.value.substring(0, cursorPos);
+            const textAfter = input.value.substring(cursorPos);
+            
+            input.value = textBefore + emoji + textAfter;
+            input.focus();
+            input.selectionStart = cursorPos + emoji.length;
+            input.selectionEnd = cursorPos + emoji.length;
+            
+            // Trigger input event for auto-resize
+            input.dispatchEvent(new Event('input'));
+            
+            // Close emoji picker on mobile
+            if (window.innerWidth <= 480) {
+                document.getElementById('emojiPicker').classList.remove('active');
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function copyRoomLink() {
+            const input = document.getElementById('roomLink');
+            input.select();
+            document.execCommand('copy');
+            showToast('Link copied to clipboard!');
+            
+            // Mobile fallback
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(input.value).then(() => {
+                    showToast('Link copied to clipboard!');
+                });
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function generateUserId() {
+            return 'user-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function generateRoomId() {
+            return 'room-' + Math.random().toString(36).substr(2, 6);
+        }
+
+        function getRandomColor() {
+            const colors = [
+                '#405de6', '#5851db', '#833ab4', '#c13584', 
+                '#e1306c', '#fd1d1d', '#f5a623', '#74b9ff',
+                '#00b894', '#00cec9', '#0984e3', '#6c5ce7'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Initialize on page load
+        window.onload = init;
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // User switched tabs - mark as away
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: 'status',
+                        room: roomId,
+                        user: currentUser,
+                        online: false
+                    }));
+                }
+            } else {
+                // User returned - mark as online
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: 'status',
+                        room: roomId,
+                        user: currentUser,
+                        online: true
+                    }));
+                }
+            }
+        });
+        
+        // Handle before unload
+        window.addEventListener('beforeunload', function() {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: 'leave',
+                    room: roomId,
+                    user: currentUser
+                }));
+            }
+        });
+    </script>
+</body>
+</html>
